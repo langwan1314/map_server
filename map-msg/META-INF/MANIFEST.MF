@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Class-Path: spring-web-4.1.0.RELEASE.jar spring-jdbc-4.1.0.RELEASE.jar
+  nutz-1.b.50.jar jdom-1.1.3.jar guava-17.0.jar slf4j-api-1.7.5.jar jp
+ ush-client-3.2.3.jar c3p0-0.9.5-pre8.jar log4
+ j-1.2.16.jar aopalliance-1.0.jar jackson-databind-2.2.3.jar httpclien
+ t-4.3.6.jar httpcore-4.3.3.jar spring-data-redis-1.6.1.RELEASE.jar ne
+ tty-all-4.0.33.Final.jar jedis-2.7.3.jar ssdb4j-9.2.jar spring-test-4
+ .1.0.RELEASE.jar jackson-annotations-2.2.3.jar mailapi-1.4.3.jar spri
+ ng-beans-4.1.0.RELEASE.jar commons-pool-1.6.jar spring-context-4.1.0.
+ RELEASE.jar spring-context-support-4.1.7.RELEASE.jar mchange-commons-
+ java-0.2.7.jar gson-2.2.4.jar javax.servlet-3.0.1.jar mybatis-3.2.7.j
+ ar commons-fileupload-1.3.1.jar commons-io-2.4.jar spring-webmvc-4.1.
+ 0.RELEASE.jar slf4j-log4j12-1.7.5.jar protobuf-java-2.6.1.jar commons
+ -codec-1.9.jar mybatis-spring-1.2.2.jar mysql-connector-java-5.1.33.j
+ ar spring-expression-4.1.0.RELEASE.jar jstl-1.2.jar jackson-core-2.2.
+ 3.jar activation-1.1.jar spring-core-4.1.0.RELEASE.jar spring-tx-4.1.
+ 0.RELEASE.jar spring-aop-4.0.3.RELEASE.jar commons-pool2-2.3.jar
+Main-Class: com.youngo.msg.controller.Boot
+

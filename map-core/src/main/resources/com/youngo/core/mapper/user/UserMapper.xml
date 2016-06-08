@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.youngo.core.mapper.user.UserMapper">
+    <resultMap id="user" type="com.youngo.core.model.user.User">
+        <id property="id" column="id"/>
+        <result property="userName" column="userName"/>
+        <result property="nickName" column="nickName"/>
+        <result property="password" column="password" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result property="icon" column="icon"/>
+        <result property="sex" column="sex"/>
+        <result property="birthday" column="birthday"/>
+        <result property="mobile" column="mobile"/>
+        <result property="email" column="email"/>
+        <result property="country" column="country"/>
+        <result property="onlineStatus" column="onlineStatus"/>
+        <result property="createtime" column="createtime"/>
+        <result property="lastupdatetime" column="lastupdatetime"/>
+        <result property="lastaccesstime" column="lastaccesstime"/>
+        <result property="lastchattime" column="lastchattime"/>
+        <result property="salt" column="salt"/>
+        <result property="currentCountry" column="currentCountry"/>
+        <result property="currentCity" column="currentCity"/>
+        <result property="status" column="status"/>
+        <result property="latitude" column="latitude"/>
+        <result property="longitude" column="longitude"/>
+        <result property="local" column="local" />
+        <association property="userDevice" resultMap="userdevice"/>
+    </resultMap>
+	
+
+    <resultMap id="userdevice" type="com.youngo.core.model.user.UserDevice">
+        <id property="id" column="deviceId"/>
+        <result property="registrationId" column="registrationId"/>
+        <result property="loginStatus" column="loginStatus"/>
+        <result property="deviceSource" column="deviceSource"/>
+        <result property="createtime" column="dcreatetime"/>
+        <result property="lastupdatetime" column="dlastupdatetime"/>
+    </resultMap>
+    
+	<insert id="insert" parameterType="com.youngo.core.model.user.User" useGeneratedKeys="true" keyProperty="id" >
+	    insert into t_user (id, userName, nickName, 
+	      password, icon, sex, birthday, 
+	      mobile, email, country, 
+	       onlineStatus, createtime,
+	      lastupdatetime, lastaccesstime, lastchattime, 
+	      salt)
+	    values (#{id,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{nickName,jdbcType=VARCHAR}, 
+	      #{password,jdbcType=VARCHAR}, #{icon,jdbcType=VARCHAR}, #{sex,jdbcType=CHAR}, #{birthday,jdbcType=DATE}, 
+	      #{mobile,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{country,jdbcType=VARCHAR}, 
+	      #{onlineStatus,jdbcType=CHAR}, #{createtime,jdbcType=TIMESTAMP},
+	      #{lastupdatetime,jdbcType=TIMESTAMP}, #{lastaccesstime,jdbcType=TIMESTAMP}, #{lastchattime,jdbcType=TIMESTAMP}, 
+	      #{salt,jdbcType=VARCHAR})
+	</insert>
+	
+	<insert id="register" parameterType="com.youngo.core.model.user.User" useGeneratedKeys="true" keyProperty="id" >
+	    insert into t_user(userName, email, password, salt, onlineStatus, createtime, lastupdatetime)
+	    values (#{userName,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+	    	#{salt,jdbcType=VARCHAR}, #{onlineStatus,jdbcType=CHAR}, #{createtime,jdbcType=TIMESTAMP}, #{lastaccesstime,jdbcType=TIMESTAMP})
+  </insert>
+	
+	<update id="updateByUserId" parameterType="com.youngo.core.model.user.User" >
+		update t_user
+	    <set >
+	      	<if test="userName != null" >
+	        	userName = #{userName,jdbcType=VARCHAR},
+	      	</if>
+	      	<if test="nickName != null" >
+	        	nickName = #{nickName,jdbcType=VARCHAR},
+	      	</if>
+	      	<if test="password != null" >
+	        	password = #{password,jdbcType=VARCHAR},
+	      	</if>
+	      	<if test="icon != null" >
+	        	icon = #{icon,jdbcType=VARCHAR},
+	      	</if>
+	      	<if test="sex != null" >
+	        	sex = #{sex,jdbcType=CHAR},
+	      	</if>
+	      	<if test="birthday != null" >
+	        	birthday = #{birthday,jdbcType=DATE},
+	      	</if>
+	      	<if test="mobile != null" >
+	        	mobile = #{mobile,jdbcType=VARCHAR},
+	      	</if>
+	      	<if test="email != null" >
+	        	email = #{email,jdbcType=VARCHAR},
+	      	</if>
+	      	<if test="country != null" >
+	        	country = #{country,jdbcType=VARCHAR},
+	      	</if>
+	      	<if test="onlineStatus != null" >
+	        	onlineStatus = #{onlineStatus,jdbcType=CHAR},
+	      	</if>
+	      	<if test="createtime != null" >
+	        	createtime = #{createtime,jdbcType=TIMESTAMP},
+	      	</if>
+	      	<if test="lastaccesstime != null" >
+	        	lastaccesstime = #{lastaccesstime,jdbcType=TIMESTAMP},
+	      	</if>
+	      	<if test="lastchattime != null" >
+	       		lastchattime = #{lastchattime,jdbcType=TIMESTAMP},
+	    	</if>
+	    	<if test="salt != null" >
+	        	salt = #{salt,jdbcType=VARCHAR},
+	    	</if>
+			<if test="position!=null">
+				position = GeomFromText('Point(${position.latitude} ${position.longitude})'),
+			</if>
+	    	<if test="geohash != null">
+	    		geohash = #{geohash,jdbcType=CHAR},
+	    	</if>
+	    	<if test="currentCountry != null">
+	    		currentCountry = #{currentCountry,jdbcType=VARCHAR},
+	    	</if>
+	    	<if test="currentCity != null">
+	    		currentCity = #{currentCity,jdbcType=VARCHAR},
+	    	</if>
+	    	<if test="status != null" >
+				status = #{status},
+			</if>
+			<if test="local != null">
+				local = #{local},
+			</if>
+			lastupdatetime =sysdate()
+	    </set>
+	    where id = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<select id="checkNickNameExsits" parameterType="string" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM t_user WHERE nickName = #{nickName,jdbcType=VARCHAR};
+	</select>
+	
+    <select id="list" parameterType="java.util.Map" resultMap="user">
+        SELECT
+        user.*,
+		X(user.position) as latitude,
+		Y(user.position) as longitude,
+		device.id AS deviceId,
+        device.registrationId,
+        device.loginStatus,
+        device.deviceSource,
+        device.createtime AS dcreatetime,
+        device.lastupdatetime AS dlastupdatetime
+        from t_user user
+        LEFT JOIN t_user_device device ON user.id=device.userId
+        <where>
+            <if test="sex!=null">
+                user.sex = #{sex}
+            </if>
+        </where>
+        ORDER BY user.onlineStatus ASC , user.lastaccesstime DESC
+		<if test="offset!=null and limit!=null">
+			LIMIT #{offset} , #{limit}
+		</if>
+		<if test="offset==null and limit!=null">
+			LIMIT #{limit}
+		</if>
+		;
+    </select>
+
+	<select id="count" parameterType="java.util.Map" resultType="int">
+		SELECT
+		COUNT(user.id)
+		from t_user user
+		<where>
+			<if test="sex!=null">
+				user.sex = #{sex}
+			</if>
+		</where>
+		;
+	</select>
+	
+	<select id="getUserByUserName" parameterType="string" resultMap="user">
+		SELECT * ,
+		X(position) as latitude,
+		Y(position) as longitude
+		FROM t_user WHERE userName = #{userName}
+	</select>
+
+    <select id="getById" parameterType="string" resultMap="user">
+        SELECT *,
+        X(position) as latitude,
+		Y(position) as longitude
+		FROM t_user WHERE id = #{id};
+    </select>
+    
+    <select id="getByIds" parameterType="list" resultMap="user">
+        SELECT *,
+		X(position) as latitude,
+		Y(position) as longitude
+		FROM t_user WHERE id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+        	#{id}
+        </foreach>
+    </select>
+	
+</mapper>

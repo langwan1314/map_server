@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.youngo.core.mapper.version.VersionMapper">
+
+	<resultMap id="version" type="com.youngo.core.model.version.Version" />
+
+	<select id="get" resultMap="version">
+		SELECT * from t_version where clientType = #{clientType} order by id asc ;
+	</select>
+	
+	<!-- 获得所有的版本信息 -->
+	<select id="list" resultMap="version" parameterType="java.util.Map">
+		SELECT * from t_version
+		<if test="whereClause != null">
+			${whereClause}
+		</if>
+		 order by id asc ;
+	</select>
+	
+	<insert id="insert" parameterType="com.youngo.core.model.version.Version">
+		<selectKey resultType="java.lang.String" order="AFTER"
+			keyProperty="id">
+			select LAST_INSERT_ID()
+		</selectKey>
+		insert into t_version
+		(id,
+		versionNumber,
+		forcibly,
+		description,
+		url,
+		clientType,
+		versionName,
+		createtime
+		)
+		values
+		(
+		#{id},
+		#{versionNumber},
+		#{forcibly},
+		#{description},
+		#{url},
+		#{clientType},
+		#{versionName},
+		sysdate()
+		)
+	</insert>
+	
+	<select id="count" parameterType="java.util.Map" resultType="java.lang.Integer">
+		select count(1) from t_version yv
+		${whereClause}
+	</select>
+
+</mapper>

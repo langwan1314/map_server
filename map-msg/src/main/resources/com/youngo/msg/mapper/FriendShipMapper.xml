@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.youngo.msg.mapper.FriendShipMapper">
+
+    <select id="getFriendCount" resultType="int" parameterType="java.lang.String">
+        select
+        count(1)
+        from
+        t_friendship fs1,
+        t_friendship fs2
+        where fs1.userId=fs2.friendId and fs1.friendId=fs2.userId and fs1.userId=#{userId};
+    </select>
+
+</mapper>

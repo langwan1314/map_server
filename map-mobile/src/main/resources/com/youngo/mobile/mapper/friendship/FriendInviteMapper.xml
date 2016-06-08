@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.youngo.mobile.mapper.friendship.FriendInviteMapper">
+
+    <resultMap id="invite" type="com.youngo.mobile.model.friendship.FriendInvite">
+        <result property="id" column="id"/>
+        <result property="invitee" column="invitee"/>
+        <result property="createtime" column="createtime"/>
+        <result property="expiretime" column="expiretime"/>
+        <result property="status" column="status"/>
+        <association property="invitor" resultMap="user"/>
+    </resultMap>
+
+    <resultMap id="user" type="com.youngo.core.model.user.UserBrief">
+        <result property="id" column="invitor"/>
+        <result property="userName" column="userName"/>
+        <result property="nickName" column="nickName"/>
+        <result property="sex" column="sex"/>
+        <result property="country" column="country"/>
+        <result property="icon" column="icon"/>
+    </resultMap>
+
+    <select id="getById" resultMap="invite" parameterType="java.lang.String">
+        SELECT
+        invite.id,
+        invite.invitee,
+        invite.createtime,
+        invite.expiretime,
+        invite.status,
+        invite.invitor,
+        invitor.userName as userName,
+        invitor.nickName as nickName,
+        invitor.sex as sex,
+        invitor.country as country,
+        invitor.icon as icon
+        FROM t_friendship_invite invite
+        LEFT JOIN t_user invitor ON invite.invitor = invitor.id
+        WHERE invite.id = #{id}
+    </select>
+
+    <select id="get" resultMap="invite" parameterType="java.util.Map">
+        SELECT
+        invite.id,
+        invite.invitee,
+        invite.createtime,
+        invite.expiretime,
+        invite.status,
+        invite.invitor,
+        invitor.userName as userName,
+        invitor.nickName as nickName,
+        invitor.sex as sex,
+        invitor.country as country,
+        invitor.icon as icon
+        FROM t_friendship_invite invite
+        LEFT JOIN t_user invitor ON invite.invitor = invitor.id
+        <where>
+            <if test="id!=null">
+                invite.id = #{id}
+            </if>
+            <if test="invitor!=null">
+                AND invite.invitor=#{invitor}
+            </if>
+            <if test="invitee!=null">
+                AND invite.invitee=#{invitee}
+            </if>
+        </where>
+        LIMIT 1;
+    </select>
+
+    <select id="list" resultMap="invite" parameterType="java.util.Map">
+        SELECT
+        invite.id,
+        invite.invitee,
+        invite.createtime,
+        invite.expiretime,
+        invite.status,
+        invite.invitor,
+        invitor.userName as userName,
+        invitor.nickName as nickName,
+        invitor.sex as sex,
+        invitor.country as country,
+        invitor.icon as icon
+        FROM t_friendship_invite invite
+        LEFT JOIN t_user invitor ON invite.invitor = invitor.id
+        <where>
+            <if test="invitee!=null">
+                invite.invitee = #{invitee}
+            </if>
+            <if test="invitor!=null">
+                AND invite.invitor = #{invitor}
+            </if>
+            <if test="userId!=null">
+                AND ( invite.invitee = #{userId} OR invite.invitor = #{userId} )
+            </if>
+            <if test="status != null">
+                AND invite.status = #{status}
+            </if>
+        </where>
+        ORDER BY invite.createtime desc;
+    </select>
+
+
+    <insert id="insert" parameterType="java.util.HashMap">
+        <selectKey resultType="java.lang.String" order="AFTER"
+                   keyProperty="id">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into t_friendship_invite
+        (
+        invitor,
+        invitee,
+        createtime,
+        expiretime,
+        status
+        )
+        values
+        (
+        #{invitor},
+        #{invitee},
+        sysdate(),
+        date_add(sysdate(), interval 30 day),
+        "waiting"
+        )
+        ON DUPLICATE KEY UPDATE createtime=sysdate() , expiretime = date_add(sysdate(), interval 30 day), status="waiting"
+    </insert>
+
+    <update id="agree" parameterType="java.util.HashMap">
+        UPDATE t_friendship_invite
+        SET status='agree'
+        <where>
+            <if test="id!=null">
+                id=#{id}
+            </if>
+            <if test="invitor!=null and invitee!=null">
+                invitor=#{invitor} AND invitee=#{invitee}
+            </if>
+        </where>
+    </update>
+
+    <update id="refuse" parameterType="java.lang.String">
+        UPDATE t_friendship_invite
+        SET status='refused'
+        where id=#{id}
+    </update>
+
+    <update id="updateTime" parameterType="java.lang.String">
+        UPDATE t_friendship_invite
+        SET createtime=sysdate() ,expiretime = date_add(sysdate(), interval 30 day)
+        WHERE id=#{id}
+    </update>
+
+    <delete id="remove" parameterType="java.lang.String">
+        DELETE FROM t_friendship_invite WHERE id = #{id};
+    </delete>
+
+</mapper>

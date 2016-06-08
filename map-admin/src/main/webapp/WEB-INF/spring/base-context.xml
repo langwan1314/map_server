@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+       ">
+	<!-- Properties -->
+	<bean id="propertyPlaceholderConfigurer"
+		class="com.youngo.core.common.YoungoPropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>/WEB-INF/dbconfig/jdbc-${target.env}.properties</value>
+				<value>/WEB-INF/ssdbconfig/ssdb-${target.env}.properties</value>
+				<value>/WEB-INF/msgserverconfig/msgserver-${target.env}.properties</value>
+			</list>
+		</property>
+	</bean>	
+
+</beans>

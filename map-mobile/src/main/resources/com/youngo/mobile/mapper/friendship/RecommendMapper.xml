@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.youngo.mobile.mapper.friendship.RecommendMapper">
+    <resultMap id="user" type="com.youngo.core.model.user.UserBrief">
+        <id property="id" column="id"/>
+        <result property="nickName" column="nickName"/>
+        <result property="icon" column="icon"/>
+        <result property="sex" column="sex"/>
+        <result property="country" column="country"/>
+        <result property="onlineStatus" column="onlineStatus"/>
+        <result property="lastaccesstime" column="lastaccesstime"/>
+        <result property="currentCountry" column="currentCountry"/>
+        <result property="currentCity" column="currentCity"/>
+    </resultMap>
+
+    <select id="list" parameterType="java.util.Map" resultMap="user">
+        SELECT
+        DISTINCT
+        user.id ,
+        user.nickName,
+        user.icon,
+        user.sex,
+        user.country,
+        user.onlineStatus,
+        user.createtime,
+        user.lastaccesstime,
+        user.currentCountry,
+        user.currentCity,
+        FROM t_user user
+        <where>
+             user.nickName IS NOT NULL AND user.id  &lt;&gt; 0 AND user.status='enable'<!-- nickName为空表示用户资料未完善，不进行推荐-->
+              <if test="userId!=null">
+                  AND user.id  &lt;&gt; #{userId}
+                  AND user.id NOT IN (SELECT friendId FROM t_friendship WHERE userId=#{userId})
+                  AND user.id NOT IN (SELECT userId FROM t_friendship WHERE friendId=#{userId})
+              </if>
+        </where>
+        ORDER BY user.onlineStatus ASC ,glanTag DESC ,ilanTag DESC,user.createtime DESC ,user.lastaccesstime DESC
+        <if test="offset!=null and limit!=null">
+            LIMIT #{offset} , #{limit}
+        </if>
+        <if test="offset==null and limit!=null">
+            LIMIT #{limit}
+        </if>
+        ;
+    </select>
+
+    <select id="listNearBy" parameterType="java.util.Map" resultMap="user">
+        (
+        SELECT
+        DISTINCT
+        user.id ,
+        user.nickName,
+        user.icon,
+        user.sex,
+        user.country,
+        user.onlineStatus,
+        user.createtime,
+        user.lastaccesstime,
+        user.geohash,
+        user.currentCountry,
+        user.currentCity
+        FROM t_user user
+        <where>
+            user.nickName IS NOT NULL AND user.id &lt;&gt; 0 AND user.status='enable'<!-- nickName为空表示用户资料未完善，不进行推荐-->
+            <if test="userId!=null">
+                AND user.id &lt;&gt; #{userId}
+                AND user.id NOT IN (SELECT friendId FROM t_friendship WHERE userId=#{userId})
+                AND user.id NOT IN (SELECT userId FROM t_friendship WHERE friendId=#{userId})
+                AND user.geohash > (SELECT u1.geohash FROM t_user u1 WHERE u1.id=#{userId})
+            </if>
+        </where>
+        ORDER BY user.onlineStatus ASC , user.geohash ASC , user.createtime DESC , user.lastaccesstime DESC
+        <if test="offset!=null and limit!=null">
+            LIMIT #{offset} , #{limit}
+        </if>
+        )
+        UNION
+        (
+        SELECT
+        DISTINCT
+        user.id ,
+        user.nickName,
+        user.icon,
+        user.sex,
+        user.country,
+        user.onlineStatus,
+        user.createtime,
+        user.lastaccesstime,
+        user.geohash,
+        user.currentCountry,
+        user.currentCity
+        FROM t_user user
+        <where>
+            user.nickName IS NOT NULL AND user.id &lt;&gt; 0 AND user.status='enable'<!-- nickName为空表示用户资料未完善，不进行推荐-->
+            <if test="userId!=null">
+                AND user.id &lt;&gt; #{userId}
+                AND user.id NOT IN (SELECT friendId FROM t_friendship WHERE userId=#{userId})
+                AND user.id NOT IN (SELECT userId FROM t_friendship WHERE friendId=#{userId})
+                AND user.geohash &lt; (SELECT u1.geohash FROM t_user u1 WHERE u1.id=#{userId})
+            </if>
+        </where>
+        ORDER BY user.onlineStatus ASC , user.geohash DESC , user.createtime DESC , user.lastaccesstime DESC
+        <if test="offset!=null and limit!=null">
+            LIMIT #{offset} , #{limit}
+        </if>
+        )
+    </select>
+
+
+    <!-- 列出异性 -->
+    <select id="listOppositeSex" parameterType="java.util.Map" resultMap="user">
+        SELECT
+        DISTINCT
+        user.id ,
+        user.nickName,
+        user.icon,
+        user.sex,
+        user.country,
+        user.onlineStatus,
+        user.createtime,
+        user.lastaccesstime,
+        user.currentCountry,
+        user.currentCity
+        FROM t_user user
+        <where>
+            user.nickName IS NOT NULL AND user.id  &lt;&gt; 0 AND user.status='enable'<!-- nickName为空表示用户资料未完善，不进行推荐-->
+            <if test="userId!=null">
+                AND user.sex &lt;&gt; (SELECT u2.sex FROM t_user u2 WHERE u2.id=#{userId})
+                AND user.id  &lt;&gt; #{userId}
+                AND user.id NOT IN (SELECT friendId FROM t_friendship WHERE userId=#{userId})
+                AND user.id NOT IN (SELECT userId FROM t_friendship WHERE friendId=#{userId})
+            </if>
+        </where>
+        ORDER BY user.onlineStatus ASC , user.createtime DESC , user.lastaccesstime DESC
+        <if test="offset!=null and limit!=null">
+            LIMIT #{offset} , #{limit}
+        </if>
+        <if test="offset==null and limit!=null">
+            LIMIT #{limit}
+        </if>
+        ;
+    </select>
+
+
+    <select id="count" parameterType="java.util.Map" resultType="int">
+        SELECT
+        COUNT(user.id)
+        from t_user user
+        <where>
+            <if test="userId!=null">
+                user.id  &lt;&gt; #{userId}
+                AND user.nickName IS NOT NULL <!-- nickName为空表示用户资料未完善，不进行推荐-->
+                AND user.id NOT IN (SELECT friendId FROM t_friendship WHERE userId=#{userId})
+                AND user.id NOT IN (SELECT userId FROM t_friendship WHERE friendId=${userId})
+            </if>
+        </where>
+        ;
+    </select>
+
+
+</mapper>

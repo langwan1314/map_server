@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+			 xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+			 xmlns:security="http://www.springframework.org/schema/security"
+			 xsi:schemaLocation="http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd        
+        http://www.springframework.org/schema/context         
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/security
+        http://www.springframework.org/schema/security/spring-security-3.2.xsd
+       ">
+
+	<!-- 起始扫描目录 -->
+	<context:component-scan base-package="com.youngo" />
+
+	<!-- 注解驱动 -->
+	<annotation-driven />
+
+	<!-- 启用安全 -->
+	<security:global-method-security
+			pre-post-annotations="enabled" />
+
+	<resources location="/, classpath:/META-INF/web-resources/"
+			   mapping="/resources/**" />
+
+	<!-- 过滤静态资源 -->
+	<default-servlet-handler />
+
+	<!-- 页面处理 -->
+	<beans:bean class="org.springframework.web.servlet.view.UrlBasedViewResolver"
+				id="tilesViewResolver">
+		<beans:property name="order" value="1" />
+		<beans:property name="viewClass"
+						value="org.springframework.web.servlet.view.tiles3.TilesView" />
+	</beans:bean>
+
+	<!-- Tiles 配置文件及定义文件 -->
+	<beans:bean
+			class="org.springframework.web.servlet.view.tiles3.TilesConfigurer"
+			id="tilesConfigurer">
+		<beans:property name="definitions">
+			<beans:list>
+				<beans:value>/WEB-INF/layouts/layouts.xml</beans:value>
+				<beans:value>/WEB-INF/views/**/views.xml</beans:value>
+			</beans:list>
+		</beans:property>
+	</beans:bean>
+
+	<!-- 国际化 -->
+	<interceptors>
+		<beans:bean
+				class="org.springframework.web.servlet.theme.ThemeChangeInterceptor" />
+		<beans:bean
+				class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"/>
+	</interceptors>
+
+	<beans:bean
+			class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
+			id="messageSource" p:basenames="WEB-INF/i18n/messages,WEB-INF/i18n/application"
+			p:fallbackToSystemLocale="false" />
+
+	<beans:bean class="org.springframework.web.servlet.i18n.CookieLocaleResolver"
+				id="localeResolver" p:cookieName="locale" />
+
+	<beans:bean
+			class="org.springframework.ui.context.support.ResourceBundleThemeSource"
+			id="themeSource" />
+
+	<beans:bean class="org.springframework.web.servlet.theme.CookieThemeResolver"
+				id="themeResolver" p:cookieName="theme" p:defaultThemeName="standard" />
+
+	<!-- 多媒体 -->
+	<beans:bean id="multipartResolver"
+				class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<beans:property name="defaultEncoding" value="UTF-8"></beans:property>
+	</beans:bean>
+
+
+	<beans:bean id="msgServer" class="com.youngo.core.model.msg.MsgServerAddress">
+		<beans:property name="port" value="${youngo.hitalk.msgserver.port}"/>
+		<beans:property name="priorIP" value="${youngo.hitalk.msgserver.priorIP}"/>
+		<beans:property name="backupIP" value="${youngo.hitalk.msgserver.backupIP}"/>
+	</beans:bean>
+
+	<beans:bean id="applicationCloseListener" class="com.youngo.admin.controller.listener.ApplicationCloseListener"/>
+
+	<!-- 导入数据库配置 -->
+	<beans:import resource="base-context.xml" />
+	<beans:import resource="jdbc-context.xml" />
+	<beans:import resource="ssdb-context.xml"/>
+
+
+</beans:beans>

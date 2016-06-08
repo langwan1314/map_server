@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+        "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+	<definition extends="style2" name="error/error">
+		<put-attribute name="menuTag" value="" cascade="true" />	
+	    <put-attribute name="titleKey" value="title_error" />		
+		<put-attribute name="body" value="/WEB-INF/views/error/error.jsp" />
+	</definition>
+
+	<definition extends="style2" name="error/404">
+		<put-attribute name="menuTag" value="" cascade="true" />	
+	    <put-attribute name="titleKey" value="title_404" />		
+		<put-attribute name="body" value="/WEB-INF/views/error/404.jsp" />
+	</definition>
+	
+	<definition extends="style2" name="error/403">
+		<put-attribute name="menuTag" value="" cascade="true" />	
+	    <put-attribute name="titleKey" value="title_403" />		
+		<put-attribute name="body" value="/WEB-INF/views/error/403.jsp" />
+	</definition>
+		
+</tiles-definitions>

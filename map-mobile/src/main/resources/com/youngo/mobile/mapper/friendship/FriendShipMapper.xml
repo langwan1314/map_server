@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.youngo.mobile.mapper.friendship.FriendShipMapper">
+
+    <resultMap id="friendship" type="com.youngo.mobile.model.friendship.FriendShip">
+        <id property="id" column="id"/>
+        <result property="userId" column="userId"/>
+        <result property="createtime" column="createtime"/>
+        <association property="friend" resultMap="user"/>
+    </resultMap>
+
+    <resultMap id="user" type="com.youngo.mobile.model.friendship.FriendInfo">
+        <id property="id" column="friendId"/>
+        <result property="nickName" column="fnickName"/>
+        <result property="icon" column="ficon"/>
+        <result property="sex" column="fsex"/>
+        <result property="country" column="fcountry"/>
+        <result property="onlineStatus" column="fonlineStatus"/>
+        <result property="lastaccesstime" column="flastaccesstime"/>
+    </resultMap>
+
+
+    <select id="get" resultMap="friendship" parameterType="java.util.Map">
+        SELECT
+        friendship.id,
+        friendship.userId,
+        friendship.createtime,
+        friendship.friendId,
+        friend.nickName as fnickName,
+        friend.sex as fsex,
+        friend.country as fcountry,
+        friend.icon as ficon,
+        friend.lastaccesstime as flastaccesstime,
+        friend.mobile as fmobile,
+        friend.onlineStatus as fonlineStatus
+        from t_friendship friendship LEFT JOIN t_user friend
+        on friendship.friendId = friend.id
+        <where>
+            <if test="userId!=null and friendId!=null">
+                friendship.userId=#{userId} AND friendship.friendId=#{friendId}
+            </if>
+        </where>
+        LIMIT 1;
+    </select>
+
+    <select id="list" resultMap="friendship" parameterType="string">
+        SELECT
+        friendship.id,
+        friendship.userId,
+        friendship.createtime,
+        friendship.friendId,
+        friend.nickName as fnickName,
+        friend.sex as fsex,
+        friend.country as fcountry,
+        friend.icon as ficon,
+        friend.lastaccesstime as flastaccesstime,
+        friend.mobile as fmobile,
+        friend.onlineStatus as fonlineStatus
+        from t_friendship friendship LEFT JOIN t_user friend
+        on friendship.friendId = friend.id
+        where friendship.userId = #{userId};
+    </select>
+
+    <insert id="insert" parameterType="com.youngo.mobile.model.friendship.FriendShip">
+        <selectKey resultType="java.lang.String" order="AFTER"
+                   keyProperty="id">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into t_friendship
+        (
+          userId,
+          friendId,
+          createtime
+        )
+        values
+        (
+          #{userId},
+          #{friendId},
+          sysdate()
+        )
+    </insert>
+
+   <delete id="remove" parameterType="java.util.Map">
+       DELETE FROM t_friendship
+       <where>
+           <if test="id!=null">
+               id=#{id}
+           </if>
+           <if test="userId!=null and friendId!=null">
+               userId=#{userId} and friendId=#{friendId}
+           </if>
+       </where>
+   </delete>
+
+</mapper>

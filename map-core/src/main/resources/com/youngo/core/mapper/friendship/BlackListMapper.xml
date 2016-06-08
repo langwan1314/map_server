@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.youngo.core.mapper.friendship.BlackListMapper">
+
+    <resultMap id="blackListItem" type="com.youngo.core.model.friendship.BlackListItem" />
+
+    <select id="get" resultMap="blackListItem">
+        SELECT * from t_blacklist
+        where id = #{id} ;
+    </select>
+
+    <select id="list" resultMap="blackListItem" parameterType="java.util.Map">
+        SELECT
+        *
+        FROM t_blacklist
+        <where>
+            <if test="userId!=null">
+                userId = #{userId}
+            </if>
+            <if test="blackId!=null">
+                AND blackId = #{blackId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insert" parameterType="java.util.Map">
+        <selectKey resultType="java.lang.String" order="AFTER"
+                   keyProperty="id">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into t_blacklist
+        (
+        userId,
+        blackId,
+        createtime,
+        lastupdatetime
+        )
+        values
+        (
+        #{userId},
+        #{blackId},
+        sysdate(),
+        sysdate()
+        )
+        ON DUPLICATE KEY UPDATE lastupdatetime=sysdate()
+    </insert>
+
+    <delete id="remove" parameterType="java.util.Map">
+        DELETE FROM t_blacklist
+        <where>
+            <if test="id!=null">
+                id=#{id}
+            </if>
+            <if test="userId!=null and blackId!=null">
+                userId=#{userId} and blackId=#{blackId}
+            </if>
+        </where>
+    </delete>
+
+</mapper>

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="map-image:war">
+    <output-path>$PROJECT_DIR$/../map-image/target</output-path>
+    <root id="archive" name="map-image.war">
+      <element id="artifact" artifact-name="map-image:war exploded" />
+    </root>
+  </artifact>
+</component>

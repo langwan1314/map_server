@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+        "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+
+	<definition extends="default" name="prosecute/list">
+		<put-attribute name="menuTag" value="prosecute_list" cascade="true" />
+		<put-attribute name="titleKey" value="prosecute_list" />
+		<put-attribute name="body" value="/WEB-INF/views/prosecute/list.jsp" />
+	</definition>
+
+	<definition extends="default" name="prosecute/audit">
+		<put-attribute name="menuTag" value="prosecute_list" cascade="true" />
+		<put-attribute name="titleKey" value="prosecute_audit" />
+		<put-attribute name="body" value="/WEB-INF/views/prosecute/audit.jsp" />
+	</definition>
+	 
+</tiles-definitions>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xsi:schemaLocation="http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+    <beans:bean id="entryPoint"
+                class="org.springframework.security.web.authentication.DelegatingAuthenticationEntryPoint">
+        <beans:constructor-arg>
+            <beans:map>
+                <beans:entry>
+                    <beans:key>
+                        <beans:bean class="com.youngo.admin.security.AjaxRequestMatcher"/>
+                    </beans:key>
+                    <beans:bean class="com.youngo.admin.security.Http401EntryPoint"/>
+                </beans:entry>
+            </beans:map>
+        </beans:constructor-arg>
+        <beans:property name="defaultEntryPoint">
+            <beans:bean
+                    class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+                <beans:property name="loginFormUrl" value="/login"/>
+            </beans:bean>
+        </beans:property>
+    </beans:bean>
+</beans:beans>

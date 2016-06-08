@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.youngo.mobile.mapper.user.SocializationMapper">
+  <resultMap id="socialization" type="com.youngo.mobile.model.user.Socialization">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="social_type" jdbcType="TINYINT" property="socialType" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="social_value" jdbcType="VARCHAR" property="socialValue" />
+    <result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="lastupdatetime" jdbcType="TIMESTAMP" property="lastupdatetime" />
+  </resultMap>
+  
+  <sql id="columns">
+    id, social_type, user_id, social_value, createtime, lastupdatetime
+  </sql>
+  
+  <insert id="insert" parameterType="com.youngo.mobile.model.user.Socialization">
+    insert into t_socialization (id, social_type, user_id, 
+      social_value, createtime, lastupdatetime
+      )
+    values (#{id,jdbcType=INTEGER}, #{socialType,jdbcType=TINYINT}, #{userId,jdbcType=INTEGER}, 
+      #{socialValue,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}, #{lastupdatetime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.youngo.mobile.model.user.Socialization">
+    update t_socialization
+    <set>
+      <if test="socialType != null">
+        social_type = #{socialType,jdbcType=TINYINT},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="socialValue != null">
+        social_value = #{socialValue,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null">
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastupdatetime != null">
+        lastupdatetime = #{lastupdatetime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="com.youngo.mobile.model.user.Socialization">
+    update t_socialization
+    set social_type = #{socialType,jdbcType=TINYINT},
+      user_id = #{userId,jdbcType=INTEGER},
+      social_value = #{socialValue,jdbcType=VARCHAR},
+      createtime = #{createtime,jdbcType=TIMESTAMP},
+      lastupdatetime = #{lastupdatetime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_socialization
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <select id="select" parameterType="map" resultMap="socialization">
+    select
+    <include refid="columns" />
+    from t_socialization
+    <where>
+    	<if test="null != socialValue">
+    		social_value = #{socialValue}
+    	</if>
+    	<if test="null != ">
+    	
+    	</if>
+    </where>
+    
+  </select>
+  
+  <select id="selectBySocialAndType" parameterType="map" resultMap="socialization">
+    select
+    <include refid="columns" />
+    from t_socialization where social_value = #{socialValue} and social_type = #{socialType}
+  </select>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="socialization">
+    <include refid="columns" />
+    from t_socialization
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+</mapper>

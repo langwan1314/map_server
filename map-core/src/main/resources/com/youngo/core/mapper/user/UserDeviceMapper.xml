@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.youngo.core.mapper.user.UserDeviceMapper">
+    <resultMap id="userDevice" type="com.youngo.core.model.user.UserDevice">
+        <result property="id" column="id"/>
+    </resultMap>
+
+    <!-- 添加 -->
+    <insert id="insert">
+        <selectKey resultType="java.lang.String" order="AFTER"
+                   keyProperty="id">
+            select LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO t_user_device
+        (
+        id,
+        userId,
+        imei,
+        registrationId,
+        loginStatus,
+        deviceSource,
+        screenSize,
+        language,
+        createtime,
+        lastupdatetime
+        )
+        values (
+        #{id},
+        #{userId},
+        #{imei},
+        #{registrationId},
+        "1",
+        #{deviceSource},
+        #{screenSize},
+        #{language},
+        sysdate(),
+        sysdate()
+        )
+    </insert>
+
+    <!-- 获取详细信息 atao   -->
+    <select id="getDetailInfo" parameterType="java.util.Map"
+            resultMap="userDevice">
+        SELECT
+        id,
+        userId,
+        imei,
+        registrationId,
+        loginStatus,
+        deviceSource,
+        screenSize,
+        language,
+        createtime,
+        lastupdatetime
+        from t_user_device
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="userId!=null">
+                and userId=#{userId}
+            </if>
+            <if test="registrationId != null">
+                and registrationId = #{registrationId}
+            </if>
+            <if test="deviceSource!=null">
+                and deviceSource=#{deviceSource}
+            </if>
+            <if test="loginStatus!=null">
+                and loginStatus = #{loginStatus}
+            </if>
+        </where>
+        LIMIT  1;
+    </select>
+
+    <select id="getDetailList" parameterType="java.util.Map"
+            resultMap="userDevice">
+        SELECT
+        id,
+        userId,
+        imei,
+        registrationId,
+        loginStatus,
+        deviceSource,
+        screenSize,
+        language,
+        createtime,
+        lastupdatetime
+        from t_user_device
+        <where>
+            <if test="userId != null">
+                userId = #{userId}
+            </if>
+            <if test="deviceSource != null">
+                and deviceSource = #{deviceSource}
+            </if>
+            <if test="loginStatus!=null">
+                and loginStatus = #{loginStatus}
+            </if>
+        </where>
+    </select>
+
+    <!-- 变更 atao 2014-10-22 -->
+    <update id="update">
+        update t_user_device
+        <set>
+            <if test="loginStatus != null">
+                loginStatus =#{loginStatus},
+            </if>
+            lastupdatetime=sysdate()
+        </set>
+        <where>
+            <if test="id != null">
+                id = #{id}
+            </if>
+            <if test="registrationId != null">
+                and registrationId = #{registrationId}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+        </where>
+    </update>
+
+    <update id="updateById">
+        update t_user_device
+        <set>
+            <if test="loginStatus != null">
+                loginStatus =#{loginStatus},
+            </if>
+            <if test="registrationId != null">
+                registrationId =#{registrationId},
+            </if>
+            <if test="imei != null">
+                imei =#{imei},
+            </if>
+            <if test="screenSize != null">
+                screenSize =#{screenSize},
+            </if>
+            lastupdatetime=sysdate()
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="getRegistrationIdsBycondition" parameterType="java.util.Map"
+            resultType="String">
+		select 
+		   g.registrationId
+		from
+		    (SELECT 
+		       distinct yp.registrationId
+		    FROM
+		        t_user_device yp, t_user yu
+		    where
+		        yp.userId = yu.id
+		        and yp.loginStatus="1"
+		        and yp.registrationId is not null
+		        ${whereClause}
+		    order by yp.createtime
+		    limit #{rowNum},#{count}
+		    ) as g
+	</select>
+
+    <select id="getRegistrationIdsByconditionCount" parameterType="java.util.Map"
+            resultType="int">
+		select 
+		   count(1)
+		from
+		    (SELECT 
+		       distinct yp.registrationId
+		    FROM
+		        t_user_device yp, t_user yu
+		    where
+		        yp.userId = yu.id
+		        and yp.loginStatus="1"
+		         and yp.registrationId is not null
+		        ${whereClause}
+		    order by yp.createtime
+		    ) as g
+	</select>
+
+    <!-- 变更设备登录状态  atao 2014-10-22 -->
+    <update id="disableLoginByUser">
+		update t_user_device
+			set	loginStatus ='0',
+			lastupdatetime=sysdate()
+			 where (userId =  #{userId} and registrationId!=#{registrationId}) or (userId != #{userId} and registrationId = #{registrationId});
+	</update>
+
+
+</mapper>

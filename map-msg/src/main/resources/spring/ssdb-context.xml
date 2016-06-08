@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+			http://www.springframework.org/schema/beans 
+			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="ssdb" class="org.nutz.ssdb4j.SSDBs" factory-method="pool">
+        <constructor-arg index="0" value="${ssdb.address}"></constructor-arg>
+        <constructor-arg index="1" value="${ssdb.port}"></constructor-arg>
+        <constructor-arg index="2" value="5000"></constructor-arg>
+        <constructor-arg index="3">
+            <ref bean="ssdbPoolConfig"/>
+        </constructor-arg>
+    </bean>
+	
+	<bean id="ssdbPoolConfig" class="com.youngo.ssdb.pool.SsdbPoolConfig">
+		<property name="testWhileIdle" value="true"/>
+		<property name="timeBetweenEvictionRunsMillis" value="240000" />
+		<property name="maxActive" value="100"/>
+		<property name="minEvictableIdleTimeMillis" value="120000" />
+	</bean>
+	
+    <bean id="valueOperations" class="com.youngo.ssdb.core.StringValueOperations">
+        <constructor-arg index="0" ref="ssdb"/>
+    </bean>
+    
+    <bean id="hashMapOperations" class="com.youngo.ssdb.core.StringHashMapOperation">
+        <constructor-arg index="0" ref="ssdb"/>
+    </bean>
+
+	<bean id="sortedSetOperation" class="com.youngo.ssdb.core.StringSortedSetOperations">
+        <constructor-arg index="0" ref="ssdb"/>
+    </bean>
+</beans>

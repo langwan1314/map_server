@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.youngo.admin.mapper.friendship.AdminProsecuteMapper">
+
+    <resultMap id="proseCute" type="com.youngo.admin.model.friendship.AdminProseCute">
+        <id property="id" column="id"/>
+        <result property="prosecutorId" column="prosecutorId"/>
+        <result property="prosecutorName" column="prosecutorName"/>
+        <result property="createtime" column="createtime"/>
+        <result property="accusedId" column="accusedId"/>
+        <result property="accusedName" column="accusedName"/>
+        <result property="status" column="status"/>
+        <association property="accusedTimes" select="accusedTimes" column="accusedId"/>
+    </resultMap>
+
+    <select id="get" resultMap="proseCute">
+        SELECT
+        prosecute.id AS id,
+        prosecute.prosecutorId AS prosecutorId,
+        user1.nickName AS prosecutorName,
+        prosecute.createtime AS createtime,
+        prosecute.accusedId AS accusedId,
+        user2.nickName AS accusedName,
+        prosecute.status AS status
+        FROM t_prosecute prosecute
+        LEFT JOIN t_user user1 ON prosecute.prosecutorId=user1.id
+        LEFT JOIN t_user user2 ON prosecute.accusedId = user2.id
+        WHERE prosecute.id = #{id} ;
+    </select>
+
+    <select id="list" resultMap="proseCute">
+        SELECT
+        prosecute.id AS id,
+        prosecute.prosecutorId AS prosecutorId,
+        user1.nickName AS prosecutorName,
+        prosecute.createtime AS createtime,
+        prosecute.accusedId AS accusedId,
+        user2.nickName AS accusedName,
+        prosecute.status AS status
+        FROM t_prosecute prosecute
+        LEFT JOIN t_user user1 ON prosecute.prosecutorId=user1.id
+        LEFT JOIN t_user user2 ON prosecute.accusedId = user2.id
+        <if test="whereClause != null">
+            ${whereClause}
+        </if>
+        order
+        by
+        ${sortBy} ${order}
+        limit
+        #{rowNum},#{rowCount}
+    </select>
+
+    <select id="accusedTimes" resultType="int">
+        SELECT
+        COUNT(1)
+        FROM t_prosecute prosecute
+        WHERE prosecute.accusedId = #{accusedId};
+    </select>
+
+    <select id="count" resultType="int">
+        SELECT
+        COUNT(1)
+        FROM t_prosecute prosecute
+        <if test="whereClause != null">
+            ${whereClause}
+        </if>
+    </select>
+
+    <update id="update" parameterType="java.util.Map">
+        UPDATE t_prosecute
+        <set>
+            <if test="status != null">
+                status =#{status}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>
